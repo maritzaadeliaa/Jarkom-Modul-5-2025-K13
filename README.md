@@ -1,5 +1,9 @@
 # Jarkom-Modul-5-2025-K13
 
+## Topologi
+
+![TREE](assets/topologi.jpg)
+
 ## Tabel Subnet
 | Subnet | Jumlah IP | Prefix |
 |--------|-----------|--------|
@@ -20,7 +24,7 @@
 
 ## VLSM TREE
 
-![TREE](assets/tree)
+![TREE](assets/TREE.jpg)
 
 ## Tabel VLSM
 
