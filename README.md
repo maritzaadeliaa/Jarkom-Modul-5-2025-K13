@@ -2,7 +2,7 @@
 
 ## Topologi
 
-![TREE](assets/topologi.jpg)
+![Topo](assets/topologi.jpg)
 
 ## Tabel Subnet
 | Subnet | Jumlah IP | Prefix |
@@ -23,6 +23,7 @@
 | TOTAL  | 428       | /23    |
 
 ## VLSM TREE
+
 
 ![TREE](assets/TREE.jpg)
 
