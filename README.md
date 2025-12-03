@@ -518,8 +518,8 @@ ip route add default via 10.70.0.65
 
 ping 10.70.0.65
 ping 10.70.0.25
-ping 10.70.0.1
-ping 10.70.0.29
+ping 10.70.0.1 
+ping 10.70.0.29 
 ```
 
 ### Misi 2: Menemukan Jejak Kegelapan (Security Rules)
