@@ -81,20 +81,20 @@ EOF
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # ===== Sisi kanan (MinasTir, Pelargir, AnduinBanks, A5, A6) via 10.70.0.2 =====
-route add -net 10.70.0.4   netmask 255.255.255.252 gw 10.70.0.2   # A2
-route add -net 10.70.0.8   netmask 255.255.255.252 gw 10.70.0.2   # A3
-route add -net 10.70.0.12  netmask 255.255.255.252 gw 10.70.0.2   # A4
+route add -net 10.70.0.4 netmask 255.255.255.252 gw 10.70.0.2   # A2
+route add -net 10.70.0.8 netmask 255.255.255.252 gw 10.70.0.2   # A3
+route add -net 10.70.0.12 netmask 255.255.255.252 gw 10.70.0.2   # A4
 route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.2   # A5
-route add -net 10.70.1.0   netmask 255.255.255.0   gw 10.70.0.2   # A6
+route add -net 10.70.1.0 netmask 255.255.255.0   gw 10.70.0.2   # A6
 
 # ===== Sisi kiri (Moria, Winterland, Durin, Khamul, IronHills) via 10.70.0.18 =====
-route add -net 10.70.0.20  netmask 255.255.255.252 gw 10.70.0.18  # A8
-route add -net 10.70.0.24  netmask 255.255.255.252 gw 10.70.0.18  # A9
-route add -net 10.70.0.64  netmask 255.255.255.192 gw 10.70.0.18  # A10
-route add -net 10.70.0.32  netmask 255.255.255.248 gw 10.70.0.18  # A11
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.18  # A8
+route add -net 10.70.0.24 netmask 255.255.255.252 gw 10.70.0.18  # A9
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.18  # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.18  # A11
 
 # ===== Bawah (Rivendell, Vilya, Narya) via 10.70.0.30 =====
-route add -net 10.70.0.40  netmask 255.255.255.248 gw 10.70.0.30  # A13
+route add -net 10.70.0.40 netmask 255.255.255.248 gw 10.70.0.30  # A13
 
 ```
 
