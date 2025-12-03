@@ -480,11 +480,46 @@ EOF
 echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
-Setelah semua diisi
+Setelah semua diisi tes ping
 
-Untuk setiap router/host Debian:
-```bash
-echo 1 > /proc/sys/net/ipv4/ip_forward   # untuk router
+TEST PING (Next Hop:
+Winterland (10.70.0.26/30) → Moria (10.70.0.25)
+```
+ping 10.70.0.25
+```
+
+TEST PING “Antar Router 1 Hop ke Osgiliath”
+Uji dari router mana pun:
+```
+ping 10.70.0.1
+ping 10.70.0.17
+ping 10.70.0.29
+```
+
+TEST PING “Antar Area Jaringan”
+
+Contoh:
+
+Dari Pelargir → Khamul:
+```
+ping 10.70.0.33
+```
+
+TEST CLIENT SUBNET (Durin, Khamul, Elendil, dsb)
+Jika DHCP BELUM kamu setup:
+
+Assign IP sementara:
+```
+ip addr add 10.70.0.100/26 dev eth0
+ip route add default via 10.70.0.65
+
+
+# Lalu test:
+
+ping 10.70.0.65
+ping 10.70.0.25
+ping 10.70.0.1
+ping 10.70.0.29
 ```
 
 ### Misi 2: Menemukan Jejak Kegelapan (Security Rules)
@@ -510,7 +545,7 @@ iptables -t nat -A POSTROUTING -s 10.70.0.0/23 -o eth0 \
     -j SNAT --to-source "$IPETH0"
 
 ```
-dari client (misal IronHills)
+dari client (misal IronHills / Durin)
 ```bash
 ping 8.8.8.8
 ```
@@ -541,7 +576,18 @@ Elendil, Cirdan, dan Isildur menerima IP otomatis.
 
 VILYA → DHCP SERVER
 ```bash
-Install DHCP server di Vilya
+
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+
+# Install DHCP server
+cat /etc/resolv.conf
+
+# Harus muncul:
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+
+# di Vilya
 apt update
 apt install isc-dhcp-server -y
 
