@@ -485,8 +485,36 @@ Setelah semua diisi
 Untuk setiap router/host Debian:
 ```bash
 echo 1 > /proc/sys/net/ipv4/ip_forward   # untuk router
-service networking restart
 ```
+
+### Misi 2: Menemukan Jejak Kegelapan (Security Rules)
+Agar jaringan aman, terapkan aturan firewall berikut.
+1. Agar jaringan Aliansi bisa terhubung ke luar (Valinor/Internet), konfigurasi routing
+menggunakan iptables.
+
+di nat_aliansi.sh (Osgiliath):
+```bash
+#!/bin/bash
+
+# 1. Aktifkan IP forwarding (supaya bisa routing antar interface)
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# 2. Ambil IP eth0 (yang ke NAT / internet)
+IPETH0="$(ip -4 addr show eth0 | awk '/inet /{print $2}' | cut -d'/' -f1)"
+
+# 3. Bersihkan NAT table dulu biar nggak dobel rule
+iptables -t nat -F
+
+# 4. NAT semua jaringan 10.70.0.0/23 yang keluar lewat eth0
+iptables -t nat -A POSTROUTING -s 10.70.0.0/23 -o eth0 \
+    -j SNAT --to-source "$IPETH0"
+
+```
+dari client (misal IronHills)
+```bash
+ping 8.8.8.8
+```
+
 
 Tes dasar: tiap client ke gateway-nya
 a. Dari Elendil (10.70.1.2)
@@ -684,33 +712,6 @@ curl http://10.70.0.14     # Palantir
 Welcome to palantir
 ```
 
-### Misi 2: Menemukan Jejak Kegelapan (Security Rules)
-Agar jaringan aman, terapkan aturan firewall berikut.
-1. Agar jaringan Aliansi bisa terhubung ke luar (Valinor/Internet), konfigurasi routing
-menggunakan iptables.
-
-di nat_aliansi.sh (Osgiliath):
-```bash
-#!/bin/bash
-
-# 1. Aktifkan IP forwarding (supaya bisa routing antar interface)
-echo 1 > /proc/sys/net/ipv4/ip_forward
-
-# 2. Ambil IP eth0 (yang ke NAT / internet)
-IPETH0="$(ip -4 addr show eth0 | awk '/inet /{print $2}' | cut -d'/' -f1)"
-
-# 3. Bersihkan NAT table dulu biar nggak dobel rule
-iptables -t nat -F
-
-# 4. NAT semua jaringan 10.70.0.0/23 yang keluar lewat eth0
-iptables -t nat -A POSTROUTING -s 10.70.0.0/23 -o eth0 \
-    -j SNAT --to-source "$IPETH0"
-
-```
-dari client (misal IronHills)
-```bash
-ping 8.8.8.8
-```
 
 2. Karena Vilya (DHCP) menyimpan data vital, pastikan tidak ada perangkat lain yang
 bisa melakukan PING ke Vilya.
