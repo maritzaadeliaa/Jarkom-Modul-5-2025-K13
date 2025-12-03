@@ -550,7 +550,6 @@ dari client (misal IronHills / Durin)
 ping 8.8.8.8
 ```
 
-
 Tes dasar: tiap client ke gateway-nya
 a. Dari Elendil (10.70.1.2)
 Cek koneksi ke router MinasTir (gateway A6):
