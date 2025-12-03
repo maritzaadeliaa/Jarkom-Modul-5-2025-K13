@@ -50,6 +50,7 @@
 
 ### Osgiliath
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -74,6 +75,10 @@ auto eth3
 iface eth3 inet static
     address 10.70.0.1
     netmask 255.255.255.252
+EOF
+
+# Aktifkan IP forwarding
+echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # ===== Sisi kanan (MinasTir, Pelargir, AnduinBanks, A5, A6) via 10.70.0.2 =====
 route add -net 10.70.0.4   netmask 255.255.255.252 gw 10.70.0.2   # A2
@@ -95,6 +100,7 @@ route add -net 10.70.0.40  netmask 255.255.255.248 gw 10.70.0.30  # A13
 
 ### Minastir (DHCP Relay)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -103,7 +109,7 @@ auto eth0
 iface eth0 inet static
     address 10.70.0.2
     netmask 255.255.255.252
-    gateway 10.70.0.1      # default gw ke Osgiliath
+#    gateway 10.70.0.1   
 
 # A6: LAN Elendil + Isildur
 auto eth1
@@ -117,36 +123,62 @@ iface eth2 inet static
     address 10.70.0.5
     netmask 255.255.255.252
 
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
 route add -net 10.70.0.8   netmask 255.255.255.252 gw 10.70.0.6   # A3
 route add -net 10.70.0.12  netmask 255.255.255.252 gw 10.70.0.6   # A4
 route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.6   # A5
 
+route add -net 10.70.0.16 netmask 255.255.255.252 gw 10.70.0.1 # A7
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.1 # A8
+route add -net 10.70.0.24 netmask 255.255.255.252 gw 10.70.0.1 # A9
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.1 # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.1 # A11
+route add -net 10.70.0.28 netmask 255.255.255.252 gw 10.70.0.1 # A12
+route add -net 10.70.0.40 netmask 255.255.255.248 gw 10.70.0.1 # A13
+
 ```
 ### Pelargir
 ```bash
+cat << EOF > /etc/network/interfaces
 auto eth0
 iface eth0 inet static
     address 10.70.0.6
     netmask 255.255.255.252
-    gateway 10.70.0.5      # default gw ke MinasTir
 
 # A3: ke AnduinBanks
 auto eth1
 iface eth1 inet static
-    address 10.70.0.9
+    address 10.70.0.13
     netmask 255.255.255.252
 
 # A4: link ke Palantir (Web Server 2)
 auto eth2
 iface eth2 inet static
-    address 10.70.0.13
+    address 10.70.0.9
     netmask 255.255.255.252
 
+EOF
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
+route add default gw 10.70.0.5
+route add -net 10.70.0.0 netmask 255.255.255.128 gw 10.70.0.5   # A1
 route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.10   # A5
+route add -net 10.70.1.0 netmask 255.255.255.0 gw 10.70.0.5   # A6
+route add -net 10.70.0.16 netmask 255.255.255.252 gw 10.70.0.5   # A7
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.5   # A8
+route add -net 10.70.0.24 netmask 255.255.255.252 gw 10.70.0.10   # A9
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.10   # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.5   # A11
+route add -net 10.70.0.28 netmask 255.255.255.252 gw 10.70.0.5   # A12
+route add -net 10.70.0.40 netmask 255.255.255.248 gw 10.70.0.5   # A13
 ```
 
 ### AnduinBanks (DHCp Relay)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -155,41 +187,62 @@ auto eth0
 iface eth0 inet static
     address 10.70.0.10
     netmask 255.255.255.252
-    gateway 10.70.0.9      # default gw ke Pelargir
 
 # A5: LAN Gilgalad + Cirdan
 auto eth1
 iface eth1 inet static
     address 10.70.0.129
     netmask 255.255.255.128
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
+route add default gw 10.70.0.9
+route add -net 10.70.0.0 netmask 255.255.255.252 gw 10.70.0.9   # A1
+route add -net 10.70.0.4 netmask 255.255.255.252 gw 10.70.0.9   # A2
+route add -net 10.70.0.12 netmask 255.255.255.252 gw 10.70.0.9   # A4
+route add -net 10.70.1.0 netmask 255.255.255.0 gw 10.70.0.9   # A6
+route add -net 10.70.0.16 netmask 255.255.255.252 gw 10.70.0.9   # A7
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.9   # A8
+route add -net 10.70.0.24 netmask 255.255.255.252 gw 10.70.0.9   # A9
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.9   # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.9   # A11
+route add -net 10.70.0.28 netmask 255.255.255.252 gw 10.70.0.9   # A12
+route add -net 10.70.0.40 netmask 255.255.255.248 gw 10.70.0.9   # A13
 ```
 
 ### Cirdan
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.0.131
-    netmask 255.255.255.128
-    gateway 10.70.0.129
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Gilgalad
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.0.130
-    netmask 255.255.255.128
-    gateway 10.70.0.129   # AnduinBanks
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
-### Palantir (Web Sever 2)
+### Palantir (Web Server 2)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -198,34 +251,44 @@ iface eth0 inet static
     address 10.70.0.14
     netmask 255.255.255.252
     gateway 10.70.0.13      # Pelargir eth2
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Isildur
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.1.3
-    netmask 255.255.255.0
-    gateway 10.70.1.1
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Elendil
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.1.10
-    netmask 255.255.255.0
-    gateway 10.70.1.1      # Rivendell
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Rivendell (DHCP Relay)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -234,40 +297,65 @@ auto eth0
 iface eth0 inet static
     address 10.70.0.30
     netmask 255.255.255.252
-    gateway 10.70.0.29      # default gw ke Osgiliath
 
 # A13: LAN Vilya + Narya + DHCP Relay
 auto eth1
 iface eth1 inet static
     address 10.70.0.41
     netmask 255.255.255.248
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
+route add default gw 10.70.0.29
+route add -net 10.70.0.0 netmask 255.255.255.252 gw 10.70.0.29   # A1
+route add -net 10.70.0.4 netmask 255.255.255.252 gw 10.70.0.29   # A2
+route add -net 10.70.0.8 netmask 255.255.255.252 gw 10.70.0.29   # A3
+route add -net 10.70.0.12 netmask 255.255.255.252 gw 10.70.0.29   # A4
+route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.29   # A5
+route add -net 10.70.1.0 netmask 255.255.255.0   gw 10.70.0.29   # A6
+route add -net 10.70.0.16 netmask 255.255.255.252 gw 10.70.0.29  # A7
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.29  # A8
+route add -net 10.70.0.24 netmask 255.255.255.252 gw 10.70.0.29  # A9
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.29  # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.29  # A11
 ```
 ### Vilya (DHCP Server)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
 iface eth0 inet static
-    address 10.70.0.44
+    address 10.70.0.43
     netmask 255.255.255.248
     gateway 10.70.0.41
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Narya (DNS Server)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
 iface eth0 inet static
-    address 10.70.0.45
+    address 10.70.0.42
     netmask 255.255.255.248
     gateway 10.70.0.41
+
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### Moria
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -276,7 +364,6 @@ auto eth0
 iface eth0 inet static
     address 10.70.0.18
     netmask 255.255.255.252
-    gateway 10.70.0.17      # default gw ke Osgiliath
 
 # A8: LAN kecil dengan IronHills (via Switch2)
 auto eth1
@@ -290,12 +377,27 @@ iface eth2 inet static
     address 10.70.0.25
     netmask 255.255.255.252
 
-route add -net 10.70.0.64  netmask 255.255.255.192 gw 10.70.0.26  # A10
-route add -net 10.70.0.32  netmask 255.255.255.248 gw 10.70.0.26  # A11
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
+route add default gw 10.70.0.17
+route add -net 10.70.0.0 netmask 255.255.255.252 gw 10.70.0.17   # A1
+route add -net 10.70.0.4 netmask 255.255.255.252 gw 10.70.0.17   # A2
+route add -net 10.70.0.8 netmask 255.255.255.252 gw 10.70.0.17   # A3
+route add -net 10.70.0.12 netmask 255.255.255.252 gw 10.70.0.17   # A4
+route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.17   # A5
+route add -net 10.70.1.0 netmask 255.255.255.0   gw 10.70.0.17   # A6
+
+route add -net 10.70.0.64 netmask 255.255.255.192 gw 10.70.0.26  # A10
+route add -net 10.70.0.32 netmask 255.255.255.248 gw 10.70.0.26  # A1
+route add -net 10.70.0.28  netmask 255.255.255.252 gw 10.70.0.17  # A10
+route add -net 10.70.0.40  netmask 255.255.255.248 gw 10.70.0.17  # A11
 ```
 
 ### Wilderland (DHCP Relay)
 ```bash
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -304,7 +406,6 @@ auto eth0
 iface eth0 inet static
     address 10.70.0.26
     netmask 255.255.255.252
-    gateway 10.70.0.25       # default gw ke Moria
 
 # A10: LAN Durin (+ IronHills via Switch2)
 auto eth1
@@ -317,29 +418,50 @@ auto eth2
 iface eth2 inet static
     address 10.70.0.33
     netmask 255.255.255.248
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+echo 1 > /proc/sys/net/ipv4/ip_forward
+route add default gw 10.70.0.25
+route add -net 10.70.0.0 netmask 255.255.255.252 gw 10.70.0.25   # A1
+route add -net 10.70.0.4 netmask 255.255.255.252 gw 10.70.0.25   # A2
+route add -net 10.70.0.8 netmask 255.255.255.252 gw 10.70.0.25   # A3
+route add -net 10.70.0.12 netmask 255.255.255.252 gw 10.70.0.25   # A4
+route add -net 10.70.0.128 netmask 255.255.255.128 gw 10.70.0.25   # A5
+route add -net 10.70.1.0 netmask 255.255.255.0   gw 10.70.0.25   # A6
+route add -net 10.70.0.16 netmask 255.255.255.252 gw 10.70.0.25  # A7
+route add -net 10.70.0.20 netmask 255.255.255.252 gw 10.70.0.25  # A8
+route add -net 10.70.0.28  netmask 255.255.255.252 gw 10.70.0.25  # A12
+route add -net 10.70.0.40  netmask 255.255.255.248 gw 10.70.0.25  # A13
 ```
 ### Durin
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.0.66
-    netmask 255.255.255.192
-    gateway 10.70.0.65
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ````
 
 ### Khamul
 ```bash
+# Client
+# Konfigurasi IP Static
+cat << EOF > /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-    address 10.70.0.34
-    netmask 255.255.255.248
-    gateway 10.70.0.33
+iface eth0 inet dhcp
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 ### IronHills (Web Server 1)
@@ -352,6 +474,10 @@ iface eth0 inet static
     address 10.70.0.22
     netmask 255.255.255.252
     gateway 10.70.0.21      # Moria eth1
+
+EOF
+
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
 Setelah semua diisi
