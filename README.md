@@ -480,15 +480,13 @@ EOF
 echo "nameserver 192.168.122.1" > /etc/resolv.conf
 ```
 
-Setelah semua diisi tes ping
-
-TEST PING (Next Hop:
+#### TEST PING (Next Hop:
 Winterland (10.70.0.26/30) → Moria (10.70.0.25)
 ```
 ping 10.70.0.25
 ```
 
-TEST PING “Antar Router 1 Hop ke Osgiliath”
+#### TEST PING “Antar Router 1 Hop ke Osgiliath”
 Uji dari router mana pun:
 ```
 ping 10.70.0.1
@@ -496,7 +494,7 @@ ping 10.70.0.17
 ping 10.70.0.29
 ```
 
-TEST PING “Antar Area Jaringan”
+#### TEST PING “Antar Area Jaringan”
 
 Contoh:
 
@@ -505,7 +503,7 @@ Dari Pelargir → Khamul:
 ping 10.70.0.33
 ```
 
-TEST CLIENT SUBNET (Durin, Khamul, Elendil, dsb)
+#### TEST CLIENT SUBNET (Durin, Khamul, Elendil, dsb)
 Jika DHCP BELUM kamu setup:
 
 Assign IP sementara:
@@ -551,20 +549,21 @@ ping 8.8.8.8
 ```
 
 Tes dasar: tiap client ke gateway-nya
-a. Dari Elendil (10.70.1.2)
-Cek koneksi ke router MinasTir (gateway A6):
+```bash
+# a. Dari Elendil (10.70.1.2)
+# Cek koneksi ke router MinasTir (gateway A6):
 ping -c 4 10.70.1.1
 
-Tes antar-router: cek backbone
-a. Dari Osgiliath:
+# Tes antar-router: cek backbone
+# a. Dari Osgiliath:
 ping -c 4 10.70.0.2    # MinasTir (A1)
 ping -c 4 10.70.0.18   # Moria (A7)
 ping -c 4 10.70.0.30   # Rivendell (A12)
 
-Tes end-to-end antar subnet
-a. Dari Gilgalad ke Durin
+# Tes end-to-end antar subnet
+# a. Dari Gilgalad ke Durin
 ping -c 4 10.70.0.66
-
+```
 4. Konfigurasi Service → Dikerjakan setelah Misi 2 No. 1:
 ● Vilya sebagai DHCP Server agar perangkat dalam Khamul, Durin, Gilgalad,
 Elendil, Cirdan, dan Isildur menerima IP otomatis.
@@ -573,7 +572,7 @@ Elendil, Cirdan, dan Isildur menerima IP otomatis.
 ● Palantir dan IronHills sebagai Web Server (Apache/Nginx).
 ● Buat index.html berisikan : "Welcome to {hostname}".
 
-VILYA → DHCP SERVER
+### VILYA → DHCP SERVER
 ```bash
 
 echo "nameserver 8.8.8.8" > /etc/resolv.conf
@@ -635,6 +634,7 @@ Restart DHCP:
 service isc-dhcp-server restart
 service isc-dhcp-server status
 ```
+
 2. DHCP RELAY (AnduinBanks, Rivendell, MinasTir)
 Install:
 ```bash
@@ -642,7 +642,6 @@ apt install isc-dhcp-relay -y
 
 # Konfig relay:
 nano /etc/default/isc-dhcp-relay
-
 
 # Isi (SEMUA relay diarahkan ke Vilya):
 
@@ -708,7 +707,6 @@ apt install apache2 -y
 
 echo "Welcome to $(hostname)" > /var/www/html/index.html
 
-
 # Restart:
 
 service apache2 restart
@@ -722,7 +720,7 @@ Palantir → 10.70.0.14
 IronHills → 10.70.0.22
 ```
 
-TEST LENGKAP
+#### TEST LENGKAP
 DHCP Test
 
 Jalankan di:
@@ -763,6 +761,7 @@ bisa melakukan PING ke Vilya.
 ● Namun, Vilya tetap leluasa dapat mengakses/ping ke seluruh perangkat lain.
 
 # Flush aturan lama
+```bash
 iptables -F
 iptables -t nat -F
 iptables -t mangle -F
@@ -774,13 +773,13 @@ iptables -A INPUT -p icmp -j DROP
 # IZINKAN ping KELUAR dari Vilya
 iptables -A OUTPUT -p icmp -j ACCEPT
 
-Dari client lain — contoh Gilgalad
+# Dari client lain — contoh Gilgalad
 ping -c 4 10.70.0.44   # Vilya
 Harus gagal (Request timed out)
 
-Dari Vilya ke router/client — contoh:
+# Dari Vilya ke router/client — contoh:
 ping -c 4 10.70.0.129   # AnduinBanks
-Harus bisa
+```
 
 3. Agar lokasi pasukan tidak bocor, hanya Vilya yang dapat mengakses Narya (DNS).
 ● Gunakan nc (netcat) untuk memastikan akses port DNS (53) ini.
@@ -812,30 +811,35 @@ iptables -A OUTPUT -p udp --sport 53 -j ACCEPT
 iptables -A OUTPUT -p tcp --sport 53 -j ACCEPT
 ```
 
-- TEST dari Vilya → HARUS BISA
+#### TEST dari Vilya → HARUS BISA
 
 Di Vilya, jalankan:
 UDP test:
+```
 nc -vzu 10.70.0.45 53
+```
 
 Expected hasil:
 Connection to 10.70.0.45 53 port [udp/domain] succeeded!
 
-- TEST dari perangkat lain → HARUS DITOLAK
+#### TEST dari perangkat lain → HARUS DITOLAK
 
 Contoh dari Gilgalad:
 
 UDP:
+```
 nc -vzu 10.70.0.45 53
-
+```
 Output harus:
 nc: connect to 10.70.0.45 port 53 (udp) failed: Connection refused
 
 SETELAH PENGUJIAN: 
+```
 iptables -F
 iptables -t nat -F
 iptables -t mangle -F
 iptables -X
+```
 
 4. Aktivitas mencurigakan terdeteksi di IronHills. Berdasarkan dekrit Raja, IronHills hanya
 boleh diakses pada Akhir Pekan (Sabtu & Minggu).
@@ -846,18 +850,19 @@ tertolak. Gunakan curl untuk membuktikan blokir waktu ini.
 
 INSTALL modul time untuk iptables
 Di IronHills:
-
+```
 apt update
 apt install iptables -y
 
-Cek modul time:
+# Cek modul time:
 
 modprobe xt_time
 
-IPTABLES DI IRONHILLS
+# IPTABLES DI IRONHILLS
+```
 
 Masuk ke node IronHills, lalu bersihkan dulu:
-````bash
+```bash
 iptables -F
 iptables -t nat -F
 iptables -t mangle -F
@@ -881,11 +886,217 @@ iptables -A INPUT -s 10.70.1.3 -p tcp --dport 80 -m time \
 
 # 2. Setelah aturan allow, block semua akses port 80 dari siapapun
 iptables -A INPUT -p tcp --dport 80 -j REJECT
-```
 
-PEMBUKTIAN DENGAN curl
+# PEMBUKTIAN DENGAN curl
 Dari Durin (10.70.0.66)
 curl -I http://10.70.0.22
 
-Expected:
+# Expected:
 curl: (7) Failed to connect ...
+```
+
+5. Sembari menunggu, pasukan berlatih di server Palantir. Akses dibatasi berdasarkan
+ras:
+● Faksi Elf (Gilgalad & Cirdan): Boleh akses jam 07.00 - 15.00.
+● Faksi Manusia (Elendil & Isildur): Boleh akses jam 17.00 - 23.00.
+● Gunakan curl untuk memastikan akses sesuai jam.
+
+di Palantir:
+```
+ip addr show
+```
+# 2. Buat folder rules
+```
+mkdir /root/fw-rules
+cd /root/fw-rules
+```
+3. Buat RULES untuk ras Elf
+```
+rules_elf_allow.sh
+```
+```
+#!/bin/bash
+iptables -F INPUT
+
+# Izinkan Elf (Gilgalad + Cirdan / A5)
+iptables -A INPUT -s 10.70.0.128/25 -p tcp --dport 80 -j ACCEPT
+
+# Izinkan localhost dan koneksi established
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+# Tolak lainnya
+iptables -A INPUT -p tcp --dport 80 -j DROP
+```
+```
+rules_elf_deny.sh
+```
+```
+#!/bin/bash
+iptables -F INPUT
+
+# Tolak Elf
+iptables -A INPUT -s 10.70.0.128/25 -p tcp --dport 80 -j DROP
+
+# Izinkan manusia (tapi akan dikontrol jadwal)
+iptables -A INPUT -s 10.70.1.0/24 -p tcp --dport 80 -j ACCEPT
+
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+```
+
+4. RULES untuk ras Manusia
+```
+rules_manusia_allow.sh
+```
+```bash
+#!/bin/bash
+iptables -F INPUT
+
+# Izinkan manusia (Elendil + Isildur / A6)
+iptables -A INPUT -s 10.70.1.0/24 -p tcp --dport 80 -j ACCEPT
+
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+# Tolak lainnya
+iptables -A INPUT -p tcp --dport 80 -j DROP
+```
+```
+rules_manusia_deny.sh
+```
+```
+#!/bin/bash
+iptables -F INPUT
+
+# Tolak manusia
+iptables -A INPUT -s 10.70.1.0/24 -p tcp --dport 80 -j DROP
+
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+```
+
+#### Set jadwal CRON
+```
+crontab -e
+
+#ELF
+0 7 * * * /root/fw-rules/rules_elf_allow.sh
+0 15 * * * /root/fw-rules/rules_elf_deny.sh
+
+#Manusia
+0 17 * * * /root/fw-rules/rules_manusia_allow.sh
+0 23 * * * /root/fw-rules/rules_manusia_deny.sh
+```
+
+Test:
+Dari Gilgalad / Cirdan:
+```
+curl http://10.70.0.10
+```
+
+Dari Elendil / Isildur:
+```
+curl http://10.70.0.10
+```
+
+7. Pasukan Manusia (Elendil) diminta menguji keamanan Palantir. Lakukan simulasi port
+scan dengan nmap rentang port 1-100.
+● a. Web server harus memblokir scan port yang melebihi 15 port dalam waktu 20
+detik.
+● b. Penyerang yang terblokir tidak dapat melakukan ping, nc, atau curl ke Palantir.
+● c. Catat log iptables dengan prefix "PORT_SCAN_DETECTED".
+
+### Di Palantir:
+```
+iptables -F
+iptables -X
+```
+Tambahkan RULE DETEKSI PORT SCAN
+```
+# 1. Jika IP sudah terdeteksi port scan → langsung DROP semua akses
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 300 -j LOG \
+    --log-prefix "PORT_SCAN_DETECTED DROP: "
+iptables -A INPUT -m recent --name portscan --rcheck --seconds 300 -j DROP
+
+# 2. Log dan blokir jika melebihi 15 koneksi dalam 20 detik
+iptables -A INPUT -p tcp -m recent --name portscan --update --seconds 20 --hitcount 15 -j LOG \
+    --log-prefix "PORT_SCAN_DETECTED ALERT: "
+iptables -A INPUT -p tcp -m recent --name portscan --update --seconds 20 --hitcount 15 -j DROP
+
+# 3. Catat setiap koneksi TCP yang masuk (dipakai untuk hitungan port scan)
+iptables -A INPUT -p tcp -m recent --name portscan --set
+
+# 4. Perbolehkan koneksi normal ke web server
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+# 5. Perbolehkan koneksi penting
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+
+# 6. Default: drop semua sisanya
+iptables -A INPUT -j DROP
+```
+
+Cek log:
+```
+dmesg | grep PORT_SCAN
+```
+
+Test dari Elendil (Manusia)
+```
+nmap -T4 -p1-100 10.70.0.10
+
+ping 10.70.0.10
+
+curl http://10.70.0.10
+
+nc 10.70.0.10 80
+```
+
+9. Hari Sabtu tiba. Akses ke IronHills dibatasi untuk mencegah overload.
+● Akses ke IronHills hanya boleh berasal dari 3 koneksi aktif per IP dalam waktu
+bersamaan.
+● Lakukan uji coba beban (stress test) menggunakan curl atau ab.
+10. Selama uji coba, terdeteksi anomali. Setiap paket yang dikirim Vilya menuju Khamul,
+ternyata dibelokkan oleh sihir hitam menuju IronHills.● Gunakan nc untuk memastikan alur pengalihan ini (Redirect trafik dari Client ke
+Server).
+Misi 3: Isolasi Sang Nazgûl
+
+di semua router yang dilewati traffic Khamul, terutama router terdekat (AnduinBanks) atau core router.
+```
+# 1. Blokir semua trafik DARI subnet Khamul
+iptables -A INPUT  -s 10.70.0.64/29 -j DROP
+iptables -A FORWARD -s 10.70.0.64/29 -j DROP
+iptables -A OUTPUT -s 10.70.0.64/29 -j DROP
+
+# 2. Blokir semua trafik MENUJU subnet Khamul
+iptables -A INPUT  -d 10.70.0.64/29 -j DROP
+iptables -A FORWARD -d 10.70.0.64/29 -j DROP
+iptables -A OUTPUT -d 10.70.0.64/29 -j DROP
+```
+
+Test:
+Dari Khamul → Durin (HARUS request timed out)
+```
+ping 10.70.0.56
+nc 10.70.0.56 80
+```
+
+Dari Durin → Khamul (HARUS Blocked)
+```
+ping 10.70.0.65
+nc 10.70.0.65 80
+```
+
+Dari Khamul → Internet (HARUS tidak bisa keluar)
+```
+ping 8.8.8.8
+curl google.com
+```
+Dari node manapun → Khamul (HARUS Blocked)
+```
+ping 10.70.0.66
+```
+
+
