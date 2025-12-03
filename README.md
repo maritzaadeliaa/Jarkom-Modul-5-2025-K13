@@ -689,27 +689,25 @@ Agar jaringan aman, terapkan aturan firewall berikut.
 1. Agar jaringan Aliansi bisa terhubung ke luar (Valinor/Internet), konfigurasi routing
 menggunakan iptables.
 
-di iptables_aliansi.sh (Osgiliath):
+di nat_aliansi.sh (Osgiliath):
 ```bash
 #!/bin/bash
 
-# aktifkan ip_forward
+# 1. Aktifkan IP forwarding (supaya bisa routing antar interface)
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
-# lanjut flush + iptables rules...
-iptables -F
-iptables -t nat -F
-iptables -t mangle -F
-iptables -X
+# 2. Ambil IP eth0 (yang ke NAT / internet)
+IPETH0="$(ip -4 addr show eth0 | awk '/inet /{print $2}' | cut -d'/' -f1)"
 
-# FORWARD + SNAT (tanpa MASQUERADE)
-IPVALINOR=$(ip -4 addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-iptables -A FORWARD -s 10.70.0.0/23 -o eth0 -j ACCEPT
-iptables -A FORWARD -d 10.70.0.0/23 -i eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -t nat -A POSTROUTING -s 10.70.0.0/23 -o eth0 -j SNAT --to-source "$IPVALINOR"
+# 3. Bersihkan NAT table dulu biar nggak dobel rule
+iptables -t nat -F
+
+# 4. NAT semua jaringan 10.70.0.0/23 yang keluar lewat eth0
+iptables -t nat -A POSTROUTING -s 10.70.0.0/23 -o eth0 \
+    -j SNAT --to-source "$IPETH0"
 
 ```
-dari client (misal Gilgalad / Elendil
+dari client (misal IronHills)
 ```bash
 ping 8.8.8.8
 ```
