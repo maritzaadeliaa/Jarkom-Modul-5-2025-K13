@@ -1,5 +1,12 @@
 # Jarkom-Modul-5-2025-K13
 
+|Anggota Kelompok | NRP |
+|------------------|---------|
+|Maritza Adelia Sucipto | 5027241111 |
+
+## Link Video Demo
+[![Watch the video](https://img.youtube.com/vi/n5SDa3GDY-I/0.jpg)](https://youtu.be/n5SDa3GDY-I)
+
 ## Topologi
 
 ![Topo](assets/topologi.jpg)
