@@ -4,8 +4,9 @@
 |------------------|---------|
 |Maritza Adelia Sucipto | 5027241111 |
 
-## Link Video Demo
-[![Watch the video](https://img.youtube.com/vi/n5SDa3GDY-I/0.jpg)](https://youtu.be/n5SDa3GDY-I)
+## Video Demo
+[![Watch the video](https://img.youtube.com/vi/n5SDa3GDY-I/hqdefault.jpg)](https://youtu.be/n5SDa3GDY-I)
+
 
 ## Topologi
 
